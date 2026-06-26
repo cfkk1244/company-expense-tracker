@@ -30,7 +30,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;color:var(--
 .nav-item:hover{background:var(--g5);color:var(--gray)}
 .nav-item.active{background:var(--blue-lt);color:var(--blue);border-left-color:var(--blue);font-weight:500}
 .nav-item svg{width:16px;height:16px;flex-shrink:0}
-.main{padding:1.25rem;overflow-auto}
+.main{padding:1.25rem;overflow:auto}
 /* PANEL */
 .panel{display:none}.panel.active{display:block}
 /* CARD */
@@ -81,7 +81,8 @@ tr:hover td{background:#fafafa}
 .b-purple{background:var(--purple-lt);color:var(--purple)}
 .b-gray{background:var(--g5);color:var(--g2)}
 /* MISC */
-.pos{color:var(--green);font-weight:700}.neg{color:var(--red);font-weight:700}
+.pos{color:var(--green);font-weight:700}
+.neg{color:var(--red);font-weight:700}
 .empty{text-align:center;padding:2.5rem;color:var(--g3);font-size:13px}
 /* UPLOAD ZONE */
 .upload-zone{border:2px dashed var(--g4);border-radius:var(--rs);padding:1rem;text-align:center;cursor:pointer;font-size:13px;color:var(--g3);transition:.15s}
@@ -101,6 +102,19 @@ tr:hover td{background:#fafafa}
 .items-table input,.items-table select{border:none;background:transparent;font-size:13px;width:100%;min-width:60px;padding:2px 4px}
 .items-table input:focus{outline:1px solid var(--blue);border-radius:2px}
 @media(max-width:680px){.layout{grid-template-columns:1fr}.sidebar{display:none}}
+
+/* PRINT STYLES - สำหรับจัดหน้าพิมพ์เอกสารให้ออกมาสวยงาม */
+@media print {
+  body { background: white; color: black; font-size: 12px; }
+  .topbar, .sidebar, .card:first-of-type, .form-actions, .btn, .btn-sm, td:last-child, th:last-child { display: none !important; }
+  .layout { display: block; }
+  .main { padding: 0; }
+  .card { border: none; padding: 0; margin: 0; }
+  .panel { display: block !important; }
+  .tbl-wrap { overflow: visible; }
+  table { width: 100%; border: 1px solid #000; }
+  th, td { border: 1px solid #000; padding: 6px; }
+}
 </style>
 </head>
 <body>
@@ -134,8 +148,7 @@ tr:hover td{background:#fafafa}
 
 <div class="main">
 
-<!-- MONTH SELECTOR -->
-<div class="card" style="padding:.8rem 1rem;margin-bottom:1rem;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+<div class="card shadow-on-ui" style="padding:.8rem 1rem;margin-bottom:1rem;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
   <div style="display:flex;flex-direction:column;gap:3px;flex:1;min-width:140px">
     <label style="font-size:11px;color:var(--g3);font-weight:700">เดือน</label>
     <select id="month-sel" onchange="onCtxChange()" style="padding:6px 8px;border:1px solid var(--g4);border-radius:var(--rs);font-size:13px"></select>
@@ -145,7 +158,6 @@ tr:hover td{background:#fafafa}
   </div>
 </div>
 
-<!-- DASHBOARD -->
 <div id="panel-dashboard" class="panel active">
   <div class="metrics" id="metrics"></div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
@@ -154,7 +166,6 @@ tr:hover td{background:#fafafa}
   </div>
 </div>
 
-<!-- ===== QUOTE FORM ===== -->
 <div id="panel-quote-form" class="panel">
 <div class="card">
   <div class="card-title"><span>📄 ใบเสนอราคาใหม่</span></div>
@@ -206,7 +217,6 @@ tr:hover td{background:#fafafa}
 </div>
 </div>
 
-<!-- ===== INVOICE FORM ===== -->
 <div id="panel-invoice-form" class="panel">
 <div class="card">
   <div class="card-title"><span>🧾 บิลใบส่งสินค้า / ยอดขาย</span></div>
@@ -257,7 +267,6 @@ tr:hover td{background:#fafafa}
 </div>
 </div>
 
-<!-- ===== RECEIPT FORM ===== -->
 <div id="panel-receipt-form" class="panel">
 <div class="card">
   <div class="card-title"><span>🧾 ใบเสร็จรับเงิน</span></div>
@@ -304,7 +313,6 @@ tr:hover td{background:#fafafa}
 </div>
 </div>
 
-<!-- ===== EXPENSE FORM ===== -->
 <div id="panel-expense-form" class="panel">
 <div class="card">
   <div class="card-title"><span>💸 บันทึกค่าใช้จ่ายองค์กร</span></div>
@@ -329,27 +337,26 @@ tr:hover td{background:#fafafa}
 </div>
 </div>
 
-<!-- LIST PANELS -->
 <div id="panel-quote-list" class="panel"><div class="card">
-  <div class="card-title"><span>รายการใบเสนอราคา</span><button class="btn btn-ghost btn-sm" onclick="exportXLSX('quotes')">⬇ Excel</button></div>
+  <div class="card-title"><span>รายการใบเสนอราคา</span><div><button class="btn btn-ghost btn-sm" onclick="window.print()">🖨️ พิมพ์ PDF</button> <button class="btn btn-ghost btn-sm" onclick="exportXLSX('quotes')">⬇ Excel</button></div></div>
   <div class="tbl-wrap"><table><thead><tr><th>เลขที่</th><th>วันที่</th><th>ลูกค้า</th><th class="tn">ยอดรวม</th><th>VAT</th><th>สถานะ</th><th>อนุมัติแล้ว</th><th></th></tr></thead><tbody id="qtbl"></tbody></table></div>
   <div id="qempty" class="empty" style="display:none">ยังไม่มีใบเสนอราคา</div>
 </div></div>
 
 <div id="panel-invoice-list" class="panel"><div class="card">
-  <div class="card-title"><span>รายการบิลใบส่งสินค้า</span><button class="btn btn-ghost btn-sm" onclick="exportXLSX('invoices')">⬇ Excel</button></div>
+  <div class="card-title"><span>รายการบิลใบส่งสินค้า</span><div><button class="btn btn-ghost btn-sm" onclick="window.print()">🖨️ พิมพ์ PDF</button> <button class="btn btn-ghost btn-sm" onclick="exportXLSX('invoices')">⬇ Excel</button></div></div>
   <div class="tbl-wrap"><table><thead><tr><th>เลขที่บิล</th><th>วันที่</th><th>ลูกค้า</th><th>พนักงาน</th><th class="tn">ยอดขาย</th><th class="tn">ต้นทุน</th><th class="tn">คอม</th><th class="tn">กำไร</th><th></th></tr></thead><tbody id="itbl"></tbody></table></div>
   <div id="iempty" class="empty" style="display:none">ยังไม่มีรายการ</div>
 </div></div>
 
 <div id="panel-receipt-list" class="panel"><div class="card">
-  <div class="card-title"><span>รายการใบเสร็จรับเงิน</span><button class="btn btn-ghost btn-sm" onclick="exportXLSX('receipts')">⬇ Excel</button></div>
+  <div class="card-title"><span>รายการใบเสร็จรับเงิน</span><div><button class="btn btn-ghost btn-sm" onclick="window.print()">🖨️ พิมพ์ PDF</button> <button class="btn btn-ghost btn-sm" onclick="exportXLSX('receipts')">⬇ Excel</button></div></div>
   <div class="tbl-wrap"><table><thead><tr><th>เลขที่</th><th>วันที่</th><th>เลขบิล</th><th>ลูกค้า</th><th>พนักงาน</th><th class="tn">ยอดขาย</th><th class="tn">กำไร</th><th></th></tr></thead><tbody id="rtbl"></tbody></table></div>
   <div id="rempty" class="empty" style="display:none">ยังไม่มีรายการ</div>
 </div></div>
 
 <div id="panel-expense-list" class="panel"><div class="card">
-  <div class="card-title"><span>รายการค่าใช้จ่าย</span><button class="btn btn-ghost btn-sm" onclick="exportXLSX('expenses')">⬇ Excel</button></div>
+  <div class="card-title"><span>รายการค่าใช้จ่าย</span><div><button class="btn btn-ghost btn-sm" onclick="window.print()">🖨️ พิมพ์ PDF</button> <button class="btn btn-ghost btn-sm" onclick="exportXLSX('expenses')">⬇ Excel</button></div></div>
   <div class="tbl-wrap"><table><thead><tr><th>วันที่</th><th>หมวดหมู่</th><th>รายละเอียด</th><th>ผู้บันทึก</th><th class="tn">จำนวนเงิน</th><th></th></tr></thead><tbody id="etbl"></tbody></table></div>
   <div id="eempty" class="empty" style="display:none">ยังไม่มีรายการ</div>
 </div></div>
@@ -369,16 +376,19 @@ tr:hover td{background:#fafafa}
 </div>
 </div>
 
-</div><!-- end main -->
-</div><!-- end layout -->
-
-<script>
+</div></div><script>
 // ==================== CORE ====================
 const MONTHS=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 const UNITS=['กล่อง','ชุด','เครื่อง','ดวง','ม้วน','ตลับ','อัน','แผ่น','ขวด','ถุง','อื่น ๆ'];
 const BRANCH_TH={khonkaen:'สาขาขอนแก่น',ubon:'สาขาอุบล'};
 const now=new Date();
 let currentBranch='khonkaen';
+
+// ป้องกันคนเผลอกดปิดหน้าต่างเบราว์เซอร์แล้วข้อมูลที่พิมพ์ค้างไว้หาย
+window.addEventListener('beforeunload', function (e) {
+  e.preventDefault();
+  e.returnValue = '';
+});
 
 // Populate months
 const mSel=document.getElementById('month-sel');
@@ -447,16 +457,16 @@ function renderPreviews(storeKey){
 function removeFile(storeKey,i){attachedFiles[storeKey].splice(i,1);renderPreviews(storeKey);}
 
 // ==================== ITEMS TABLE HELPERS ====================
-function unitSelect(val){return`<select style="width:90px">${UNITS.map(u=>`<option${u===val?' selected':''}`+`>${u}</option>`).join('')}</select>`;}
+function unitSelect(val){return`<select style="width:90px">${UNITS.map(u=>`<option${u===val?' selected':''}`+`>${u}</option>`).join('')}</select>`}
 
 function addQItem(){
   const tb=document.getElementById('q-items-body');
   const tr=document.createElement('tr');
-  tr.innerHTML=`<td><input type="text" placeholder="ชื่อสินค้า"></td>
-    <td><input type="number" min="0" placeholder="0" oninput="calcQuote()" style="width:65px"></td>
+  tr.innerHTML=`<td><input type="text" class="q-pname" placeholder="ชื่อสินค้า"></td>
+    <td><input type="number" min="0" class="q-qty" placeholder="0" oninput="calcQuote()" style="width:65px"></td>
     <td>${unitSelect('')}</td>
-    <td><input type="number" min="0" step="0.01" placeholder="0.00" oninput="calcQuote()"></td>
-    <td><input class="ro" readonly></td>
+    <td><input type="number" min="0" step="0.01" class="q-price" placeholder="0.00" oninput="calcQuote()"></td>
+    <td><input class="ro q-total-row" readonly></td>
     <td><button onclick="this.closest('tr').remove();calcQuote()" style="background:none;border:none;cursor:pointer;color:var(--red);font-size:16px">×</button></td>`;
   tb.appendChild(tr);
 }
@@ -464,13 +474,13 @@ function addQItem(){
 function addIItem(){
   const tb=document.getElementById('i-items-body');
   const tr=document.createElement('tr');
-  tr.innerHTML=`<td><input type="text" placeholder="ชื่อสินค้า"></td>
-    <td><input type="number" min="0" placeholder="0" oninput="calcInvoice()" style="width:65px"></td>
+  tr.innerHTML=`<td><input type="text" class="i-pname" placeholder="ชื่อสินค้า"></td>
+    <td><input type="number" min="0" class="i-qty" placeholder="0" oninput="calcInvoice()" style="width:65px"></td>
     <td>${unitSelect('')}</td>
-    <td><input type="number" min="0" step="0.01" placeholder="0.00" oninput="calcInvoice()"></td>
-    <td><input type="number" min="0" step="0.01" placeholder="0.00" oninput="calcInvoice()"></td>
-    <td><input class="ro" readonly></td>
-    <td><input class="ro" readonly></td>
+    <td><input type="number" min="0" step="0.01" class="i-cost" placeholder="0.00" oninput="calcInvoice()"></td>
+    <td><input type="number" min="0" step="0.01" class="i-price" placeholder="0.00" oninput="calcInvoice()"></td>
+    <td><input class="ro i-total-sale" readonly></td>
+    <td><input class="ro i-total-cost" readonly></td>
     <td><button onclick="this.closest('tr').remove();calcInvoice()" style="background:none;border:none;cursor:pointer;color:var(--red);font-size:16px">×</button></td>`;
   tb.appendChild(tr);
 }
@@ -478,12 +488,12 @@ function addIItem(){
 function addRItem(prod,qty,unit,pu,cu){
   const tb=document.getElementById('r-items-body');
   const tr=document.createElement('tr');
-  tr.innerHTML=`<td><input type="text" value="${prod||''}" placeholder="ชื่อสินค้า"></td>
-    <td><input type="number" min="0" value="${qty||''}" placeholder="0" oninput="calcReceipt()" style="width:65px"></td>
+  tr.innerHTML=`<td><input type="text" class="r-pname" value="${prod||''}" placeholder="ชื่อสินค้า"></td>
+    <td><input type="number" min="0" class="r-qty" value="${qty||''}" placeholder="0" oninput="calcReceipt()" style="width:65px"></td>
     <td>${unitSelect(unit||'')}</td>
-    <td><input type="number" min="0" step="0.01" value="${pu||''}" placeholder="0.00" oninput="calcReceipt()"></td>
-    <td><input class="ro" readonly></td>
-    <td><input type="number" min="0" step="0.01" value="${cu||''}" placeholder="0.00" oninput="calcReceipt()"></td>
+    <td><input type="number" min="0" step="0.01" class="r-price" value="${pu||''}" placeholder="0.00" oninput="calcReceipt()"></td>
+    <td><input class="ro r-total-sale" readonly></td>
+    <td><input type="number" min="0" step="0.01" class="r-cost" value="${cu||''}" placeholder="0.00" oninput="calcReceipt()"></td>
     <td><button onclick="this.closest('tr').remove();calcReceipt()" style="background:none;border:none;cursor:pointer;color:var(--red);font-size:16px">×</button></td>`;
   tb.appendChild(tr);
   calcReceipt();
@@ -493,10 +503,10 @@ function addRItem(prod,qty,unit,pu,cu){
 function calcQuote(){
   let sub=0;
   document.querySelectorAll('#q-items-body tr').forEach(tr=>{
-    const ins=tr.querySelectorAll('input[type=number]');
-    const qty=parseFloat(ins[0]?.value)||0, pu=parseFloat(ins[1]?.value)||0;
+    const qty=parseFloat(tr.querySelector('.q-qty').value)||0;
+    const pu=parseFloat(tr.querySelector('.q-price').value)||0;
     const total=qty*pu; sub+=total;
-    const ro=tr.querySelectorAll('input.ro')[0];if(ro)ro.value=total?fmt(total):'';
+    tr.querySelector('.q-total-row').value=total?fmt(total):'';
   });
   const useVat=parseInt(document.getElementById('q-vat').value);
   const vatAmt=useVat?sub*0.07:0, grand=sub+vatAmt;
@@ -508,12 +518,12 @@ function calcQuote(){
 function calcInvoice(){
   let saleTotal=0,costTotal=0;
   document.querySelectorAll('#i-items-body tr').forEach(tr=>{
-    const ins=tr.querySelectorAll('input[type=number]');
-    const qty=parseFloat(ins[0]?.value)||0,costU=parseFloat(ins[1]?.value)||0,priceU=parseFloat(ins[2]?.value)||0;
+    const qty=parseFloat(tr.querySelector('.i-qty').value)||0;
+    const costU=parseFloat(tr.querySelector('.i-cost').value)||0;
+    const priceU=parseFloat(tr.querySelector('.i-price').value)||0;
     const st=qty*priceU,ct=qty*costU; saleTotal+=st; costTotal+=ct;
-    const ros=tr.querySelectorAll('input.ro');
-    if(ros[0])ros[0].value=st?fmt(st):'';
-    if(ros[1])ros[1].value=ct?fmt(ct):'';
+    tr.querySelector('.i-total-sale').value=st?fmt(st):'';
+    tr.querySelector('.i-total-cost').value=ct?fmt(ct):'';
   });
   const cr=parseFloat(document.getElementById('i-comm-rate').value)||0;
   const comm=saleTotal*cr/100, profit=saleTotal-costTotal-comm;
@@ -524,13 +534,15 @@ function calcInvoice(){
   document.getElementById('i-profit').style.color=profit<0?'var(--red)':'var(--green)';
 }
 
+// ผูกฟังก์ชันคำนวณเงินหน้าใบเสร็จ
 function calcReceipt(){
   let saleTotal=0,costTotal=0;
   document.querySelectorAll('#r-items-body tr').forEach(tr=>{
-    const ins=tr.querySelectorAll('input[type=number]');
-    const qty=parseFloat(ins[0]?.value)||0,pu=parseFloat(ins[1]?.value)||0,cu=parseFloat(ins[2]?.value)||0;
+    const qty=parseFloat(tr.querySelector('.r-qty').value)||0;
+    const pu=parseFloat(tr.querySelector('.r-price').value)||0;
+    const cu=parseFloat(tr.querySelector('.r-cost').value)||0;
     const st=qty*pu,ct=qty*cu; saleTotal+=st; costTotal+=ct;
-    const ro=tr.querySelectorAll('input.ro')[0];if(ro)ro.value=st?fmt(st):'';
+    tr.querySelector('.r-total-sale').value=st?fmt(st):'';
   });
   const cr=parseFloat(document.getElementById('r-comm-rate').value)||0;
   const comm=saleTotal*cr/100,profit=saleTotal-costTotal-comm;
@@ -542,9 +554,9 @@ function calcReceipt(){
 }
 
 // ==================== SAVE ====================
-function getQItems(){return Array.from(document.querySelectorAll('#q-items-body tr')).map(tr=>{const ins=tr.querySelectorAll('input');const sel=tr.querySelector('select');const qty=parseFloat(ins[1]?.value)||0,pu=parseFloat(ins[2]?.value)||0;return{product:ins[0]?.value||'',qty,unit:sel?.value||'',priceUnit:pu,total:qty*pu};});}
-function getIItems(){return Array.from(document.querySelectorAll('#i-items-body tr')).map(tr=>{const ins=tr.querySelectorAll('input[type=number]');const sel=tr.querySelector('select');const qty=parseFloat(ins[0]?.value)||0,cu=parseFloat(ins[1]?.value)||0,pu=parseFloat(ins[2]?.value)||0;const prd=tr.querySelector('input[type=text]');return{product:prd?.value||'',qty,unit:sel?.value||'',costUnit:cu,priceUnit:pu,saleTotal:qty*pu,costTotal:qty*cu};});}
-function getRItems(){return Array.from(document.querySelectorAll('#r-items-body tr')).map(tr=>{const ins=tr.querySelectorAll('input[type=number]');const sel=tr.querySelector('select');const qty=parseFloat(ins[0]?.value)||0,pu=parseFloat(ins[1]?.value)||0,cu=parseFloat(ins[2]?.value)||0;const prd=tr.querySelector('input[type=text]');return{product:prd?.value||'',qty,unit:sel?.value||'',priceUnit:pu,saleTotal:qty*pu,costUnit:cu};});}
+function getQItems(){return Array.from(document.querySelectorAll('#q-items-body tr')).map(tr=>{const qty=parseFloat(tr.querySelector('.q-qty').value)||0;const pu=parseFloat(tr.querySelector('.q-price').value)||0;return{product:tr.querySelector('.q-pname').value||'',qty,unit:tr.querySelector('select')?.value||'',priceUnit:pu,total:qty*pu};});}
+function getIItems(){return Array.from(document.querySelectorAll('#i-items-body tr')).map(tr=>{const qty=parseFloat(tr.querySelector('.i-qty').value)||0;const cu=parseFloat(tr.querySelector('.i-cost').value)||0;const pu=parseFloat(tr.querySelector('.i-price').value)||0;return{product:tr.querySelector('.i-pname').value||'',qty,unit:tr.querySelector('select')?.value||'',costUnit:cu,priceUnit:pu,saleTotal:qty*pu,costTotal:qty*cu};});}
+function getRItems(){return Array.from(document.querySelectorAll('#r-items-body tr')).map(tr=>{const qty=parseFloat(tr.querySelector('.r-qty').value)||0;const pu=parseFloat(tr.querySelector('.r-price').value)||0;const cu=parseFloat(tr.querySelector('.r-cost').value)||0;return{product:tr.querySelector('.r-pname').value||'',qty,unit:tr.querySelector('select')?.value||'',priceUnit:pu,saleTotal:qty*pu,costUnit:cu};});}
 
 function saveQuote(){
   const no=document.getElementById('q-no').value.trim();
@@ -655,8 +667,7 @@ function renderQLList(){
   const d=loadData();const tb=document.getElementById('qtbl');
   document.getElementById('qempty').style.display=d.quotes.length?'none':'block';
   if(!d.quotes.length){tb.innerHTML='';return;}
-  tb.innerHTML=d.quotes.slice().reverse().map((q,ri)=>{
-    const i=d.quotes.length-1-ri;
+  tb.innerHTML=d.quotes.slice().reverse().map((q)=>{
     return`<tr>
       <td><span class="badge b-purple">${q.no}</span></td>
       <td>${q.date}</td><td>${q.customer}</td>
@@ -664,19 +675,18 @@ function renderQLList(){
       <td>${q.useVat?'<span class="badge b-blue">มี VAT 7%</span>':'<span class="badge b-gray">ไม่มี VAT</span>'}</td>
       <td>${q.approved?'<span class="qs-approved">✅ อนุมัติแล้ว</span>':'<span class="qs-pending">⏳ รอการอนุมัติ</span>'}</td>
       <td><label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:13px">
-        <input type="checkbox" ${q.approved?'checked':''} onchange="toggleApprove(${i},this.checked)"> อนุมัติ</label></td>
-      <td><button class="btn btn-danger btn-sm" onclick="delQ(${i})">ลบ</button></td>
+        <input type="checkbox" ${q.approved?'checked':''} onchange="toggleApprove(${q.id},this.checked)"> อนุมัติ</label></td>
+      <td><button class="btn btn-danger btn-sm" onclick="delQ(${q.id})">ลบ</button></td>
     </tr>`;}).join('');
 }
 
-function toggleApprove(i,val){const d=loadData();d.quotes[d.quotes.length-1-i].approved=val;saveData(d);renderQLList();renderDash();}
+function toggleApprove(id,val){const d=loadData();const item=d.quotes.find(q=>q.id===id);if(item){item.approved=val;saveData(d);renderQLList();renderDash();}}
 
 function renderIList(){
   const d=loadData();const tb=document.getElementById('itbl');
   document.getElementById('iempty').style.display=d.invoices.length?'none':'block';
   if(!d.invoices.length){tb.innerHTML='';return;}
-  tb.innerHTML=d.invoices.slice().reverse().map((inv,ri)=>{
-    const i=d.invoices.length-1-ri;
+  tb.innerHTML=d.invoices.slice().reverse().map((inv)=>{
     return`<tr>
       <td><span class="badge b-green">${inv.no}</span></td>
       <td>${inv.date}</td><td>${inv.customer}</td><td>${inv.salesPerson||'-'}</td>
@@ -684,7 +694,7 @@ function renderIList(){
       <td class="tn">฿${fmt(inv.costTotal)}</td>
       <td class="tn">฿${fmt(inv.commAmt)}</td>
       <td class="tn ${inv.profit>=0?'pos':'neg'}">฿${fmt(inv.profit)}</td>
-      <td><button class="btn btn-danger btn-sm" onclick="delI(${i})">ลบ</button></td>
+      <td><button class="btn btn-danger btn-sm" onclick="delI(${inv.id})">ลบ</button></td>
     </tr>`;}).join('');
 }
 
@@ -692,14 +702,13 @@ function renderRList(){
   const d=loadData();const tb=document.getElementById('rtbl');
   document.getElementById('rempty').style.display=d.receipts.length?'none':'block';
   if(!d.receipts.length){tb.innerHTML='';return;}
-  tb.innerHTML=d.receipts.slice().reverse().map((r,ri)=>{
-    const i=d.receipts.length-1-ri;
+  tb.innerHTML=d.receipts.slice().reverse().map((r)=>{
     return`<tr>
       <td><span class="badge b-blue">${r.no}</span></td>
       <td>${r.date}</td><td>${r.invNo||'-'}</td><td>${r.customer}</td><td>${r.salesPerson||'-'}</td>
       <td class="tn">฿${fmt(r.saleTotal)}</td>
       <td class="tn ${r.profit>=0?'pos':'neg'}">฿${fmt(r.profit)}</td>
-      <td><button class="btn btn-danger btn-sm" onclick="delR(${i})">ลบ</button></td>
+      <td><button class="btn btn-danger btn-sm" onclick="delR(${r.id})">ลบ</button></td>
     </tr>`;}).join('');
 }
 
@@ -707,21 +716,21 @@ function renderEList(){
   const d=loadData();const tb=document.getElementById('etbl');
   document.getElementById('eempty').style.display=d.expenses.length?'none':'block';
   if(!d.expenses.length){tb.innerHTML='';return;}
-  tb.innerHTML=d.expenses.slice().reverse().map((e,ri)=>{
-    const i=d.expenses.length-1-ri;
+  tb.innerHTML=d.expenses.slice().reverse().map((e)=>{
     return`<tr>
       <td>${e.date}</td>
       <td><span class="badge b-amber">${e.cat}</span></td>
       <td>${e.desc}</td><td>${e.by||'-'}</td>
       <td class="tn neg">฿${fmt(e.amount)}</td>
-      <td><button class="btn btn-danger btn-sm" onclick="delE(${i})">ลบ</button></td>
+      <td><button class="btn btn-danger btn-sm" onclick="delE(${e.id})">ลบ</button></td>
     </tr>`;}).join('');
 }
 
-function delQ(i){const d=loadData();d.quotes.splice(d.quotes.length-1-i,1);saveData(d);renderQLList();renderDash();}
-function delI(i){const d=loadData();d.invoices.splice(d.invoices.length-1-i,1);saveData(d);renderIList();renderDash();}
-function delR(i){const d=loadData();d.receipts.splice(d.receipts.length-1-i,1);saveData(d);renderRList();renderDash();}
-function delE(i){const d=loadData();d.expenses.splice(d.expenses.length-1-i,1);saveData(d);renderEList();renderDash();}
+// เปลี่ยนระบบลบให้ใช้การค้นหา .findIndex() ด้วย ID แทนการนับแถว ป้องกันการลบผิดแถว
+function delQ(id){if(confirm('ต้องการลบรายการนี้ใช่หรือไม่?')){const d=loadData();const idx=d.quotes.findIndex(q=>q.id===id);if(idx!==-1){d.quotes.splice(idx,1);saveData(d);renderQLList();renderDash();}}}
+function delI(id){if(confirm('ต้องการลบรายการนี้ใช่หรือไม่?')){const d=loadData();const idx=d.invoices.findIndex(i=>i.id===id);if(idx!==-1){d.invoices.splice(idx,1);saveData(d);renderIList();renderDash();}}}
+function delR(id){if(confirm('ต้องการลบรายการนี้ใช่หรือไม่?')){const d=loadData();const idx=d.receipts.findIndex(r=>r.id===id);if(idx!==-1){d.receipts.splice(idx,1);saveData(d);renderRList();renderDash();}}}
+function delE(id){if(confirm('ต้องการลบรายการนี้ใช่หรือไม่?')){const d=loadData();const idx=d.expenses.findIndex(e=>e.id===id);if(idx!==-1){d.expenses.splice(idx,1);saveData(d);renderEList();renderDash();}}}
 
 // ==================== EXPORT XLSX (SheetJS via CDN) ====================
 function loadSheetJS(cb){
@@ -775,7 +784,7 @@ function exportXLSX(type){
       const ws=XLSX.utils.aoa_to_sheet(rows);ws['!cols']=[{wch:11},{wch:14},{wch:28},{wch:14},{wch:14},{wch:18}];
       XLSX.utils.book_append_sheet(wb,ws,'ค่าใช้จ่าย');
     }
-    const fname=`${monthTH}_${branchTH}${type==='all'?'_ทุกรายการ':type==='invoices'?'_บิลขาย':type==='quotes'?'_ใบเสนอราคา':type==='receipts'?'_ใบเสร็จ':'_คาใชจาย'}.xlsx`;
+    const fname=`${monthTH}_${branchTH}${type==='all'?'_ทุกรายการ':type==='invoices'?'_บิลขาย':type==='quotes'?'_ใบเสนอราคา':type==='receipts'?'_ใบเสร็จ':'_ค่าใช้จ่าย'}.xlsx`;
     XLSX.writeFile(wb,fname);
   });
 }
