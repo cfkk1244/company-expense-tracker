@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ข้อมูล บริษัท คอมฟอร์มอีสาน จำกัด (Comform Esan)</title>
+<link rel="stylesheet" href="style.css">
+<img class="company-logo" src="logo.png" alt="Comform Esan Logo">
+<script type="module" src="firebase-auth.js"></script>
+<script type="module" src="firebase-bridge.js"></script>
+<script src="app.js"></script>
+<script type="module" src="firebase-dashboard.js"></script>
+</head>
+<body>
+
+<div id="app-content">
+<div class="topbar comform-topbar">
+  <img class="company-logo" src="logo.png" alt="Comform Esan Logo">
+  <div class="company-title-wrap">
+    <div class="company-main-title">ข้อมูล บริษัท คอมฟอร์มอีสาน จำกัด ( Comform Esan )</div>
+    <div class="company-sub-title">ระบบบันทึกข้อมูลบริษัท / ฝ่ายขาย / ค่าใช้จ่าย / สั่งผลิตสินค้า</div>
+  </div>
+  <span id="topbar-ctx" class="company-date"></span>
+  <!-- ปุ่ม ☰ แสดงเฉพาะมือถือ (CSS ซ่อนบนคอม) -->
+  <button id="mob-menu-btn" onclick="openDrawer()" aria-label="เปิดเมนู" style="display:none;background:rgba(255,255,255,.15);border:none;border-radius:8px;width:44px;height:44px;cursor:pointer;align-items:center;justify-content:center;flex-shrink:0;margin-left:auto">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+</div>
+
+<!-- MOBILE DRAWER MENU — เพิ่มใหม่ ไม่แตะโค้ดเดิม -->
+<div id="mob-overlay" onclick="closeDrawer()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:800"></div>
+<nav id="mob-drawer" role="navigation" aria-label="เมนูมือถือ" style="display:none;position:fixed;top:0;left:0;width:280px;height:100%;background:white;z-index:900;overflow-y:auto;box-shadow:4px 0 24px rgba(0,0,0,.18);transform:translateX(-100%);transition:transform .25s ease">
+  <!-- Header drawer -->
+  <div style="background:linear-gradient(90deg,#0f5fbf,#1d4ed8);padding:1rem 1.1rem;display:flex;align-items:center;gap:10px">
+    <img src="logo.png" alt="" style="width:36px;height:36px;border-radius:8px;background:white;padding:4px;object-fit:contain">
+    <div>
+      <div style="color:white;font-size:14px;font-weight:700;line-height:1.3">คอมฟอร์มอีสาน</div>
+      <div style="color:rgba(255,255,255,.75);font-size:11px">เมนูหลัก</div>
+    </div>
+    <button onclick="closeDrawer()" aria-label="ปิดเมนู" style="margin-left:auto;background:rgba(255,255,255,.15);border:none;border-radius:8px;width:34px;height:34px;cursor:pointer;display:flex;align-items:center;justify-content:center">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <!-- Nav items — สำเนาจาก sidebar เดิมทุกรายการ -->
+  <div style="padding:.5rem 0">
+    <div class="mob-sec">ภาพรวม</div>
+    <div class="mob-item" onclick="mobGo('dashboard')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>แดชบอร์ด</div>
+
+    <div class="mob-sec">เอกสารขาย</div>
+    <div class="mob-item" onclick="mobGo('quote-form')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>ใบเสนอราคา</div>
+    <div class="mob-item" onclick="mobGo('invoice-form')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7-7 7 7"/></svg>บิลใบส่งสินค้า</div>
+    <div class="mob-item" onclick="mobGo('receipt-form')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/></svg>ใบเสร็จรับเงิน</div>
+
+    <div class="mob-sec">ฝ่ายผลิต</div>
+    <div class="mob-item" onclick="mobGo('production-form')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l8 4V7l8 4v10"/><path d="M9 17h1M14 17h1M19 17h1"/></svg>สั่งผลิตสินค้า</div>
+    <div class="mob-item" onclick="mobGo('production-list')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>รายการสั่งผลิต</div>
+
+    <div class="mob-sec">ค่าใช้จ่าย</div>
+    <div class="mob-item" onclick="mobGo('expense-form')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7 7 7-7"/></svg>บันทึกค่าใช้จ่าย</div>
+
+    <div class="mob-sec">ค้นหา & รายการ</div>
+    <div class="mob-item" onclick="mobGo('quote-list')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>ใบเสนอราคา</div>
+    <div class="mob-item" onclick="mobGo('invoice-list')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>บิลส่งสินค้า</div>
+    <div class="mob-item" onclick="mobGo('receipt-list')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>ใบเสร็จ</div>
+    <div class="mob-item" onclick="mobGo('expense-list')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>ค่าใช้จ่าย</div>
+
+    <div class="mob-sec">ไฟล์</div>
+    <div class="mob-item" onclick="mobGo('files')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>Export / Import</div>
+  </div>
+</nav>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="detail-modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <h3 id="modal-title">รายละเอียด</h3>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<div class="layout">
+<nav class="sidebar">
+  <div class="nav-sec">ภาพรวม</div>
+  <div class="nav-item active" onclick="go('dashboard',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>แดชบอร์ด</div>
+  <div class="nav-sec">เอกสารขาย</div>
+  <div class="nav-item" onclick="go('quote-form',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>ใบเสนอราคา</div>
+  <div class="nav-item" onclick="go('invoice-form',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7-7 7 7"/></svg>บิลใบส่งสินค้า</div>
+  <div class="nav-item" onclick="go('receipt-form',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/></svg>ใบเสร็จรับเงิน</div>
+  <div class="nav-sec">ฝ่ายผลิต</div>
+  <div class="nav-item" onclick="go('production-form',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l8 4V7l8 4v10"/><path d="M9 17h1M14 17h1M19 17h1"/></svg>สั่งผลิตสินค้า</div>
+  <div class="nav-item" onclick="go('production-list',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>รายการสั่งผลิต</div>
+  <div class="nav-sec">ค่าใช้จ่าย</div>
+  <div class="nav-item" onclick="go('expense-form',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7 7 7-7"/></svg>บันทึกค่าใช้จ่าย</div>
+  <div class="nav-sec">ค้นหา & รายการ</div>
+  <div class="nav-item" onclick="go('quote-list',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>ใบเสนอราคา</div>
+  <div class="nav-item" onclick="go('invoice-list',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>บิลส่งสินค้า</div>
+  <div class="nav-item" onclick="go('receipt-list',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>ใบเสร็จ</div>
+  <div class="nav-item" onclick="go('expense-list',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>ค่าใช้จ่าย</div>
+  <div class="nav-sec">ไฟล์</div>
+  <div class="nav-item" onclick="go('files',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>Export / Import</div>
+</nav>
+
+<div class="main">
+
+<!-- DASHBOARD -->
+<div id="panel-dashboard" class="panel active">
+  <div class="dash-tabs">
+    <button class="dtab active" id="dt-all" onclick="switchDashTab('all')">รวมทั้ง 2 สาขา</button>
+    <button class="dtab kk" id="dt-kk" onclick="switchDashTab('khonkaen')">🔵 สาขาขอนแก่น</button>
+    <button class="dtab ub" id="dt-ub" onclick="switchDashTab('ubon')">🟣 สาขาอุบล</button>
+  </div>
+
+  <!-- Filter row for dashboard -->
+  <div class="filter-bar" style="margin-bottom:.75rem">
+    <div><label>เดือน</label>
+      <select id="dash-month" onchange="renderDash()">
+        <option value="-1">ทุกเดือน</option>
+      </select>
+    </div>
+    <div><label>ปี</label>
+      <select id="dash-year" onchange="onYearChange();renderDash()"></select>
+    </div>
+    <span id="dash-badge" style="background:var(--blue-lt);color:var(--blue);font-size:12px;padding:5px 14px;border-radius:20px;font-weight:600;align-self:flex-end"></span>
+  </div>
+
+  <div id="dash-combined">
+    <div class="metrics" id="metrics-total"></div>
+    <div class="compare-grid">
+      <div class="bc kk"><div class="bname">🔵 สาขาขอนแก่น</div><div id="dash-kk-rows"></div></div>
+      <div class="bc ub"><div class="bname">🟣 สาขาอุบล</div><div id="dash-ub-rows"></div></div>
+    </div>
+  </div>
+  <div id="dash-single" style="display:none">
+    <div class="metrics" id="metrics-single"></div>
+  </div>
+
+  <!-- DASHBOARD CHARTS -->
+  <div class="dash-chart-grid">
+    <div class="card chart-card">
+      <div class="card-title chart-title-row">
+        <span>📊 กราฟเปรียบเทียบข้อมูล</span>
+        <div class="chart-controls">
+          <select id="dash-chart-range" onchange="renderDashCharts()">
+            <option value="monthly">รายเดือนในปีที่เลือก</option>
+            <option value="yearly">เปรียบเทียบรายปี</option>
+          </select>
+          <select id="dash-chart-metric" onchange="renderDashCharts()">
+            <option value="sales">ยอดขายจากบิลใบส่งสินค้า</option>
+            <option value="production">ยอดสั่งผลิตสินค้า</option>
+            <option value="profit">กำไรสุทธิ</option>
+            <option value="expense">ค่าใช้จ่าย</option>
+          </select>
+        </div>
+      </div>
+      <div id="dash-bar-chart" class="bar-chart"></div>
+      <div id="dash-bar-summary" class="chart-summary"></div>
+    </div>
+
+    <div class="card chart-card">
+      <div class="card-title chart-title-row">
+        <span>👥 ลูกค้าที่ซื้อ / สั่งผลิตมากที่สุด</span>
+        <div class="chart-controls">
+          <select id="dash-customer-source" onchange="renderDashCharts()">
+            <option value="all">รวมบิลใบส่งสินค้า + สั่งผลิต</option>
+            <option value="invoices">จากบิลใบส่งสินค้า</option>
+            <option value="productions">จากใบสั่งผลิต</option>
+          </select>
+          <select id="dash-customer-mode" onchange="renderDashCharts()">
+            <option value="value">เรียงตามมูลค่า</option>
+            <option value="count">เรียงตามจำนวนเอกสาร</option>
+          </select>
+        </div>
+      </div>
+      <div id="dash-customer-chart" class="bar-chart customer-chart"></div>
+      <div id="dash-customer-summary" class="chart-summary"></div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div class="card"><div class="card-title">ใบเสนอราคาล่าสุด</div><div id="dash-quotes"></div></div>
+    <div class="card"><div class="card-title">บิลขายล่าสุด</div><div id="dash-invs"></div></div>
+  </div>
+</div>
+
+<!-- QUOTE FORM -->
+<div id="panel-quote-form" class="panel"><div class="card">
+  <div class="card-title">📄 ใบเสนอราคาใหม่</div>
+  <div class="fg">
+    <div class="ff"><label>เลขที่ใบเสนอราคา *</label><input type="text" id="q-no" placeholder="QT-2568-001"></div>
+    <div class="ff"><label>วันที่เสนอราคา *</label><input type="date" id="q-date"></div>
+    <div class="ff-full">
+      <label style="font-size:12px;color:var(--g2);font-weight:500;display:block;margin-bottom:6px">สาขา * <span style="color:var(--red)">— กรุณาเลือกสาขา</span></label>
+      <div class="br-row">
+        <label class="br-opt" id="q-br-kk" onclick="selBr('q','khonkaen')"><input type="radio" name="q-br"> 🔵 สาขาขอนแก่น</label>
+        <label class="br-opt" id="q-br-ub" onclick="selBr('q','ubon')"><input type="radio" name="q-br"> 🟣 สาขาอุบล</label>
+      </div>
+      <div class="br-warn" id="q-br-warn">⚠️ กรุณาเลือกสาขาก่อนบันทึก</div>
+    </div>
+    <div class="ff"><label>ชื่อลูกค้า *</label><input type="text" id="q-cust" placeholder="ชื่อบริษัท / ลูกค้า"></div>
+    <div class="ff"><label>ชื่อพนักงานขาย</label><input type="text" id="q-sales" placeholder="ชื่อพนักงาน"></div>
+    <div class="fdiv"></div><div class="fsec">รายการสินค้า</div>
+    <div class="ff-full">
+      <table class="items-table"><thead><tr>
+        <th style="min-width:170px">ชื่อสินค้า/รายการ</th><th style="min-width:60px">จำนวน</th>
+        <th style="min-width:85px">หน่วย</th><th style="min-width:105px">ราคา/หน่วย (บาท)</th>
+        <th style="min-width:105px">ราคารวม (บาท)</th><th style="width:28px"></th>
+      </tr></thead><tbody id="q-items-body"></tbody></table>
+      <button class="btn btn-ghost btn-sm" style="margin-top:6px" onclick="addQItem()">+ เพิ่มรายการ</button>
+    </div>
+    <div class="fdiv"></div>
+    <div class="ff"><label>ภาษีมูลค่าเพิ่ม 7%</label>
+      <select id="q-vat" onchange="calcQ()"><option value="0">ไม่รวม VAT</option><option value="1">รวม VAT 7%</option></select>
+    </div>
+    <div class="ff"><label>ยอดก่อน VAT (บาท)</label><input id="q-sub" class="ro" readonly></div>
+    <div class="ff"><label>VAT 7% (บาท)</label><input id="q-vat-amt" class="ro" readonly></div>
+    <div class="ff"><label>ยอดรวมทั้งหมด (บาท)</label><input id="q-total" class="ro" readonly style="font-size:15px;color:var(--blue)"></div>
+    <div class="fdiv"></div><div class="fsec">หลักฐานการส่งใบเสนอราคา</div>
+    <div class="ff-full">
+      <div class="upload-zone" onclick="document.getElementById('q-files').click()">
+        📎 แนบรูปภาพหรือ PDF (คลิกเลือก)
+        <input type="file" id="q-files" accept="image/*,.pdf" multiple onchange="handleFiles('q-att',this)">
+      </div>
+      <div class="file-preview" id="q-att"></div>
+    </div>
+    <div class="ff"><label>หมายเหตุ</label><input type="text" id="q-note" placeholder="(ไม่บังคับ)"></div>
+  </div>
+  <div class="form-actions">
+    <button class="btn btn-ghost" onclick="resetF('quote')">ล้างฟอร์ม</button>
+    <button class="btn btn-primary" onclick="saveQuote()">💾 บันทึกใบเสนอราคา</button>
+  </div>
+</div></div>
+
+<!-- INVOICE FORM -->
+<div id="panel-invoice-form" class="panel"><div class="card">
+  <div class="card-title">🧾 บิลใบส่งสินค้า / ยอดขาย</div>
+  <div class="fg">
+    <div class="ff"><label>เลขที่บิล *</label><input type="text" id="i-no" placeholder="INV-2568-001"></div>
+    <div class="ff"><label>วันที่ *</label><input type="date" id="i-date"></div>
+    <div class="ff-full">
+      <label style="font-size:12px;color:var(--g2);font-weight:500;display:block;margin-bottom:6px">สาขา * <span style="color:var(--red)">— กรุณาเลือกสาขา</span></label>
+      <div class="br-row">
+        <label class="br-opt" id="i-br-kk" onclick="selBr('i','khonkaen')"><input type="radio" name="i-br"> 🔵 สาขาขอนแก่น</label>
+        <label class="br-opt" id="i-br-ub" onclick="selBr('i','ubon')"><input type="radio" name="i-br"> 🟣 สาขาอุบล</label>
+      </div>
+      <div class="br-warn" id="i-br-warn">⚠️ กรุณาเลือกสาขาก่อนบันทึก</div>
+    </div>
+    <div class="ff"><label>ชื่อลูกค้า *</label><input type="text" id="i-cust" placeholder="ชื่อบริษัท / ลูกค้า"></div>
+    <div class="ff"><label>ชื่อพนักงานขาย *</label><input type="text" id="i-sales" placeholder="ชื่อพนักงาน"></div>
+    <div class="fdiv"></div><div class="fsec">รายการสินค้า</div>
+    <div class="ff-full">
+      <table class="items-table"><thead><tr>
+        <th style="min-width:160px">ชื่อสินค้า</th><th style="min-width:60px">จำนวน</th>
+        <th style="min-width:80px">หน่วย</th><th style="min-width:100px">ต้นทุน/หน่วย</th>
+        <th style="min-width:100px">ราคาขาย/หน่วย</th><th style="min-width:100px">ยอดขายรวม</th>
+        <th style="min-width:100px">ต้นทุนรวม</th><th style="width:28px"></th>
+      </tr></thead><tbody id="i-items-body"></tbody></table>
+      <button class="btn btn-ghost btn-sm" style="margin-top:6px" onclick="addIItem()">+ เพิ่มรายการ</button>
+    </div>
+    <div class="fdiv"></div>
+    <div class="ff"><label>ยอดขายรวม (บาท)</label><input id="i-st" class="ro" readonly></div>
+    <div class="ff"><label>ต้นทุนรวม (บาท)</label><input id="i-ct" class="ro" readonly></div>
+    <div class="ff"><label>วิธีคิดค่าคอมมิสชัน</label><select id="i-comm-mode" onchange="toggleCommMode('i');calcI()"><option value="percent">คิดตามเปอร์เซ็นต์</option><option value="manual">ใส่จำนวนเงินเอง</option></select></div>
+    <div class="ff"><label>อัตราค่าคอมมิสชัน (%)</label><input type="number" id="i-cr" placeholder="0" min="0" max="100" step="0.1" oninput="calcI()"></div>
+    <div class="ff"><label>ค่าคอมมิสชัน (บาท)</label><input id="i-ca" class="ro" readonly inputmode="decimal" placeholder="0.00" oninput="calcI()"></div>
+    <div class="ff"><label>กำไรสุทธิ (บาท)</label><input id="i-pf" class="ro" readonly></div>
+    <div class="fdiv"></div><div class="fsec">หลักฐาน</div>
+    <div class="ff-full">
+      <div class="upload-zone" onclick="document.getElementById('i-files').click()">
+        📎 แนบรูปภาพหรือ PDF<input type="file" id="i-files" accept="image/*,.pdf" multiple onchange="handleFiles('i-att',this)">
+      </div>
+      <div class="file-preview" id="i-att"></div>
+    </div>
+    <div class="ff"><label>หมายเหตุ</label><input type="text" id="i-note" placeholder="(ไม่บังคับ)"></div>
+  </div>
+  <div class="form-actions">
+    <button class="btn btn-ghost" onclick="resetF('invoice')">ล้างฟอร์ม</button>
+    <button class="btn btn-green" onclick="saveInvoice()">💾 บันทึกบิลใบส่งสินค้า</button>
+  </div>
+</div></div>
+
+<!-- RECEIPT FORM -->
+<div id="panel-receipt-form" class="panel"><div class="card">
+  <div class="card-title">🧾 ใบเสร็จรับเงิน</div>
+  <div class="fg">
+    <div class="ff"><label>เลขที่ใบเสร็จ *</label><input type="text" id="r-no" placeholder="REC-2568-001"></div>
+    <div class="ff"><label>วันที่ *</label><input type="date" id="r-date"></div>
+    <div class="ff-full">
+      <label style="font-size:12px;color:var(--g2);font-weight:500;display:block;margin-bottom:6px">สาขา * <span style="color:var(--red)">— กรุณาเลือกสาขา</span></label>
+      <div class="br-row">
+        <label class="br-opt" id="r-br-kk" onclick="selBr('r','khonkaen')"><input type="radio" name="r-br"> 🔵 สาขาขอนแก่น</label>
+        <label class="br-opt" id="r-br-ub" onclick="selBr('r','ubon')"><input type="radio" name="r-br"> 🟣 สาขาอุบล</label>
+      </div>
+      <div class="br-warn" id="r-br-warn">⚠️ กรุณาเลือกสาขาก่อนบันทึก</div>
+    </div>
+    <div class="ff"><label>เลขบิลอ้างอิง</label>
+      <select id="r-inv-ref" onchange="fillFromInv()"><option value="">-- เลือกจากบิลที่มี --</option></select>
+    </div>
+    <div class="ff"><label>หรือกรอกเลขบิลเอง</label><input type="text" id="r-inv-no" placeholder="เลขบิลอ้างอิง"></div>
+    <div class="ff"><label>ชื่อพนักงานขาย</label><input type="text" id="r-sales" placeholder="ชื่อพนักงาน"></div>
+    <div class="ff"><label>ชื่อลูกค้า *</label><input type="text" id="r-cust" placeholder="ชื่อบริษัท / ลูกค้า"></div>
+    <div class="fdiv"></div><div class="fsec">รายการสินค้า</div>
+    <div class="ff-full">
+      <table class="items-table"><thead><tr>
+        <th style="min-width:160px">ชื่อสินค้า</th><th style="min-width:60px">จำนวน</th>
+        <th style="min-width:80px">หน่วย</th><th style="min-width:100px">ราคาขาย/หน่วย</th>
+        <th style="min-width:100px">ราคาขายรวม</th><th style="min-width:100px">ต้นทุน/หน่วย</th>
+        <th style="width:28px"></th>
+      </tr></thead><tbody id="r-items-body"></tbody></table>
+      <button class="btn btn-ghost btn-sm" style="margin-top:6px" onclick="addRItem()">+ เพิ่มรายการ</button>
+    </div>
+    <div class="fdiv"></div>
+    <div class="ff"><label>ยอดขายรวม (บาท)</label><input id="r-st" class="ro" readonly></div>
+    <div class="ff"><label>ต้นทุนรวม (บาท)</label><input id="r-ct" class="ro" readonly></div>
+    <div class="ff"><label>วิธีคิดค่าคอมมิสชัน</label><select id="r-comm-mode" onchange="toggleCommMode('r');calcR()"><option value="percent">คิดตามเปอร์เซ็นต์</option><option value="manual">ใส่จำนวนเงินเอง</option></select></div>
+    <div class="ff"><label>ค่าคอมมิสชัน (%)</label><input type="number" id="r-cr" placeholder="0" min="0" max="100" step="0.1" oninput="calcR()"></div>
+    <div class="ff"><label>ค่าคอมมิสชัน (บาท)</label><input id="r-ca" class="ro" readonly inputmode="decimal" placeholder="0.00" oninput="calcR()"></div>
+    <div class="ff"><label>กำไรสุทธิ (บาท)</label><input id="r-pf" class="ro" readonly></div>
+    <div class="ff"><label>หมายเหตุ</label><input type="text" id="r-note" placeholder="(ไม่บังคับ)"></div>
+  </div>
+  <div class="form-actions">
+    <button class="btn btn-ghost" onclick="resetF('receipt')">ล้างฟอร์ม</button>
+    <button class="btn btn-purple" onclick="saveReceipt()">💾 บันทึกใบเสร็จ</button>
+  </div>
+</div></div>
+
+
+<!-- PRODUCTION FORM -->
+<div id="panel-production-form" class="panel"><div class="card">
+  <div class="card-title"><span>🏭 สั่งผลิตสินค้า</span><span class="section-hint">จัดรูปแบบเหมือนใบเสนอราคา / ใบเสร็จ เพื่อกรอกง่าย</span></div>
+  <div class="fg">
+    <div class="ff"><label>เลขที่สั่งผลิต *</label><input type="text" id="p-no" placeholder="PRD-2568-001"></div>
+    <div class="ff"><label>วันที่ *</label><input type="date" id="p-date"></div>
+    <div class="ff-full">
+      <label style="font-size:14px;color:var(--g2);font-weight:700;display:block;margin-bottom:8px">สาขา * <span style="color:var(--red)">— กรุณาเลือกสาขา</span></label>
+      <div class="br-row">
+        <label class="br-opt" id="p-br-kk" onclick="selBr('p','khonkaen')"><input type="radio" name="p-br"> 🔵 สาขาขอนแก่น</label>
+        <label class="br-opt" id="p-br-ub" onclick="selBr('p','ubon')"><input type="radio" name="p-br"> 🟣 สาขาอุบล</label>
+      </div>
+      <div class="br-warn" id="p-br-warn">⚠️ กรุณาเลือกสาขาก่อนบันทึก</div>
+    </div>
+    <div class="ff"><label>ชื่อผู้รับผลิต *</label><input type="text" id="p-maker" placeholder="ชื่อบริษัท / ผู้รับผลิต"></div>
+    <div class="ff"><label>ชื่อลูกค้า *</label><input type="text" id="p-cust" placeholder="ชื่อลูกค้า"></div>
+    <div class="ff ff-full"><label>ชื่องาน *</label><input type="text" id="p-job" placeholder="เช่น งานป้าย / งานพิมพ์ / งานผลิตสินค้า"></div>
+
+    <div class="fdiv"></div><div class="fsec">รายการสินค้าที่สั่งผลิต</div>
+    <div class="ff-full">
+      <div class="tbl-wrap">
+        <table class="items-table production-items-table">
+          <thead><tr>
+            <th style="width:42px">ลำดับ</th>
+            <th style="min-width:150px">จำนวนสินค้าที่สั่งผลิต *</th>
+            <th style="min-width:170px">ราคาต้นทุนต่อหน่วย (บาท) *</th>
+            <th style="min-width:170px">มูลค่าสินค้าไม่รวมภาษี (บาท)</th>
+            <th style="min-width:170px">ภาษีมูลค่าเพิ่ม VAT 7% (บาท)</th>
+            <th style="min-width:170px">ราคาสุทธิรวมภาษี (บาท)</th>
+            <th style="width:62px">จัดการ</th>
+          </tr></thead>
+          <tbody id="p-items-body"></tbody>
+        </table>
+      </div>
+      <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="addPItem()">+ เพิ่มรายการสินค้า</button>
+    </div>
+
+    <div class="fdiv"></div>
+    <div class="ff ff-full">
+      <label>เงื่อนไขราคา *</label>
+      <div class="vat-choice" style="margin-top:6px">
+        <label><input type="radio" name="p-vat" value="1" checked onchange="calcP()"> รวมภาษีมูลค่าเพิ่ม (VAT 7%)</label>
+        <label><input type="radio" name="p-vat" value="0" onchange="calcP()"> ไม่รวมภาษีมูลค่าเพิ่ม (VAT 7%)</label>
+      </div>
+    </div>
+
+    <div class="ff"><label>มูลค่าไม่รวมภาษีรวม (บาท)</label><input id="p-sub-total" class="ro readonly-big" readonly></div>
+    <div class="ff"><label>VAT 7% รวม (บาท)</label><input id="p-vat-total" class="ro readonly-big" readonly></div>
+    <div class="ff"><label>ราคาสุทธิรวมภาษีรวม (บาท)</label><input id="p-total" class="ro readonly-big" readonly style="font-size:18px;color:var(--blue)"></div>
+
+    <div class="fdiv"></div><div class="fsec">หลักฐาน / หมายเหตุ</div>
+    <div class="ff ff-full">
+      <div class="upload-zone" onclick="document.getElementById('p-files').click()">
+        📎 แนบรูปภาพหรือ PDF หลักฐานการสั่งผลิต
+        <input type="file" id="p-files" accept="image/*,.pdf" multiple onchange="handleFiles('p-att',this)">
+      </div>
+      <div class="file-preview" id="p-att"></div>
+    </div>
+    <div class="ff ff-full"><label>หมายเหตุ</label><input id="p-note" placeholder="รายละเอียดเพิ่มเติม เช่น กำหนดส่ง / เงื่อนไขการผลิต (ไม่บังคับ)"></div>
+  </div>
+  <div class="form-actions">
+    <button class="btn btn-ghost" onclick="resetProduction()">ล้างฟอร์ม</button>
+    <button class="btn btn-primary" onclick="saveProduction()">💾 บันทึกสั่งผลิตสินค้า</button>
+  </div>
+</div></div>
+
+<!-- PRODUCTION LIST -->
+<div id="panel-production-list" class="panel"><div class="card">
+  <div class="card-title"><span>รายการสั่งผลิตสินค้า</span><button class="btn btn-ghost btn-sm" onclick="exportXLSX('productions')">⬇ Excel</button></div>
+  <div class="filter-bar" style="margin-bottom:.75rem">
+    <div><label>สาขา</label><select id="pl-br" onchange="renderPList()"><option value="">ทุกสาขา</option><option value="khonkaen">สาขาขอนแก่น</option><option value="ubon">สาขาอุบล</option></select></div>
+    <div><label>เดือน</label><select id="pl-month" onchange="renderPList()"><option value="">ทุกเดือน</option></select></div>
+    <div><label>ปี</label><select id="pl-year" onchange="renderPList()"></select></div>
+    <div><label>ค้นหาเลขที่ / งาน</label><input type="text" id="pl-search" placeholder="พิมพ์ค้นหา..." oninput="renderPList()" style="min-width:160px"></div>
+  </div>
+  <div class="tbl-wrap"><table><thead><tr><th>เลขที่</th><th>สาขา</th><th>วันที่</th><th>ผู้รับผลิต</th><th>ลูกค้า</th><th>ชื่องาน</th><th class="tn">จำนวน</th><th class="tn">ต้นทุน/หน่วย</th><th class="tn">รวมต้นทุน</th><th>VAT</th><th></th></tr></thead><tbody id="ptbl"></tbody></table></div>
+  <div id="pempty" class="empty" style="display:none">ไม่พบรายการ</div>
+</div></div>
+
+<!-- EXPENSE FORM -->
+<div id="panel-expense-form" class="panel"><div class="card">
+  <div class="card-title">💸 บันทึกค่าใช้จ่ายองค์กร</div>
+  <div class="fg">
+    <div class="ff"><label>วันที่ *</label><input type="date" id="e-date"></div>
+    <div class="ff-full">
+      <label style="font-size:12px;color:var(--g2);font-weight:500;display:block;margin-bottom:6px">สาขา * <span style="color:var(--red)">— กรุณาเลือกสาขา</span></label>
+      <div class="br-row">
+        <label class="br-opt" id="e-br-kk" onclick="selBr('e','khonkaen')"><input type="radio" name="e-br"> 🔵 สาขาขอนแก่น</label>
+        <label class="br-opt" id="e-br-ub" onclick="selBr('e','ubon')"><input type="radio" name="e-br"> 🟣 สาขาอุบล</label>
+      </div>
+      <div class="br-warn" id="e-br-warn">⚠️ กรุณาเลือกสาขาก่อนบันทึก</div>
+    </div>
+    <div class="ff"><label>หมวดหมู่ *</label>
+      <select id="e-cat"><option>ค่าวัตถุดิบ</option><option>ค่าแรงงาน</option><option>ค่าเช่าสถานที่</option><option>ค่าสาธารณูปโภค</option><option>ค่าขนส่ง</option><option>ค่าการตลาด</option><option>ค่าอุปกรณ์สำนักงาน</option><option>ค่าซ่อมบำรุง</option><option>อื่น ๆ</option></select>
+    </div>
+    <div class="ff ff-full"><label>รายละเอียด *</label><input type="text" id="e-desc" placeholder="คำอธิบายค่าใช้จ่าย"></div>
+    <div class="ff"><label>จำนวนเงิน (บาท) *</label><input type="number" id="e-amount" placeholder="0.00" step="0.01"></div>
+    <div class="ff"><label>ผู้บันทึก</label><input type="text" id="e-by" placeholder="ชื่อพนักงาน"></div>
+    <div class="ff"><label>หมายเหตุ</label><input type="text" id="e-note" placeholder="(ไม่บังคับ)"></div>
+  </div>
+  <div class="form-actions">
+    <button class="btn btn-ghost" onclick="resetF('expense')">ล้างฟอร์ม</button>
+    <button class="btn btn-red" onclick="saveExpense()">💾 บันทึกค่าใช้จ่าย</button>
+  </div>
+</div></div>
+
+<!-- QUOTE LIST -->
+<div id="panel-quote-list" class="panel"><div class="card">
+  <div class="card-title"><span>รายการใบเสนอราคา</span>
+    <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-ghost btn-sm" onclick="exportXLSX('quotes')">⬇ Excel</button></div>
+  </div>
+  <div class="filter-bar" style="margin-bottom:.75rem">
+    <div><label>สาขา</label>
+      <select id="ql-br" onchange="renderQLList()"><option value="">ทุกสาขา</option><option value="khonkaen">สาขาขอนแก่น</option><option value="ubon">สาขาอุบล</option></select>
+    </div>
+    <div><label>เดือน</label>
+      <select id="ql-month" onchange="renderQLList()"><option value="">ทุกเดือน</option></select>
+    </div>
+    <div><label>ปี</label>
+      <select id="ql-year" onchange="renderQLList()"></select>
+    </div>
+    <div><label>ค้นหาเลขที่</label>
+      <input type="text" id="ql-search" placeholder="พิมพ์เลขที่..." oninput="renderQLList()" style="min-width:130px">
+    </div>
+  </div>
+  <div class="tbl-wrap"><table><thead><tr><th>เลขที่</th><th>สาขา</th><th>วันที่</th><th>ลูกค้า</th><th>พนักงาน</th><th class="tn">ยอดรวม</th><th>VAT</th><th>สถานะ</th><th>อนุมัติ</th><th></th></tr></thead><tbody id="qtbl"></tbody></table></div>
+  <div id="qempty" class="empty" style="display:none">ไม่พบรายการ</div>
+</div></div>
+
+<!-- INVOICE LIST -->
+<div id="panel-invoice-list" class="panel"><div class="card">
+  <div class="card-title"><span>รายการบิลใบส่งสินค้า</span>
+    <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-ghost btn-sm" onclick="exportXLSX('invoices')">⬇ Excel</button></div>
+  </div>
+  <div class="filter-bar" style="margin-bottom:.75rem">
+    <div><label>สาขา</label>
+      <select id="il-br" onchange="renderIList()"><option value="">ทุกสาขา</option><option value="khonkaen">สาขาขอนแก่น</option><option value="ubon">สาขาอุบล</option></select>
+    </div>
+    <div><label>เดือน</label>
+      <select id="il-month" onchange="renderIList()"><option value="">ทุกเดือน</option></select>
+    </div>
+    <div><label>ปี</label>
+      <select id="il-year" onchange="renderIList()"></select>
+    </div>
+    <div><label>ค้นหาเลขที่</label>
+      <input type="text" id="il-search" placeholder="พิมพ์เลขที่..." oninput="renderIList()" style="min-width:130px">
+    </div>
+  </div>
+  <div class="tbl-wrap"><table><thead><tr><th>เลขที่บิล</th><th>สาขา</th><th>วันที่</th><th>ลูกค้า</th><th>พนักงาน</th><th class="tn">ยอดขาย</th><th class="tn">ต้นทุน</th><th class="tn">คอม</th><th class="tn">กำไร</th><th></th></tr></thead><tbody id="itbl"></tbody></table></div>
+  <div id="iempty" class="empty" style="display:none">ไม่พบรายการ</div>
+</div></div>
+
+<!-- RECEIPT LIST -->
+<div id="panel-receipt-list" class="panel"><div class="card">
+  <div class="card-title"><span>รายการใบเสร็จรับเงิน</span>
+    <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-ghost btn-sm" onclick="exportXLSX('receipts')">⬇ Excel</button></div>
+  </div>
+  <div class="filter-bar" style="margin-bottom:.75rem">
+    <div><label>สาขา</label>
+      <select id="rl-br" onchange="renderRList()"><option value="">ทุกสาขา</option><option value="khonkaen">สาขาขอนแก่น</option><option value="ubon">สาขาอุบล</option></select>
+    </div>
+    <div><label>เดือน</label>
+      <select id="rl-month" onchange="renderRList()"><option value="">ทุกเดือน</option></select>
+    </div>
+    <div><label>ปี</label>
+      <select id="rl-year" onchange="renderRList()"></select>
+    </div>
+    <div><label>ค้นหาเลขที่</label>
+      <input type="text" id="rl-search" placeholder="พิมพ์เลขที่..." oninput="renderRList()" style="min-width:130px">
+    </div>
+  </div>
+  <div class="tbl-wrap"><table><thead><tr><th>เลขที่</th><th>สาขา</th><th>วันที่</th><th>เลขบิล</th><th>ลูกค้า</th><th>พนักงาน</th><th class="tn">ยอดขาย</th><th class="tn">กำไร</th><th></th></tr></thead><tbody id="rtbl"></tbody></table></div>
+  <div id="rempty" class="empty" style="display:none">ไม่พบรายการ</div>
+</div></div>
+
+<!-- EXPENSE LIST -->
+<div id="panel-expense-list" class="panel"><div class="card">
+  <div class="card-title"><span>รายการค่าใช้จ่าย</span>
+    <button class="btn btn-ghost btn-sm" onclick="exportXLSX('expenses')">⬇ Excel</button>
+  </div>
+  <div class="filter-bar" style="margin-bottom:.75rem">
+    <div><label>สาขา</label>
+      <select id="el-br" onchange="renderEList()"><option value="">ทุกสาขา</option><option value="khonkaen">สาขาขอนแก่น</option><option value="ubon">สาขาอุบล</option></select>
+    </div>
+    <div><label>เดือน</label>
+      <select id="el-month" onchange="renderEList()"><option value="">ทุกเดือน</option></select>
+    </div>
+    <div><label>ปี</label>
+      <select id="el-year" onchange="renderEList()"></select>
+    </div>
+  </div>
+  <div class="tbl-wrap"><table><thead><tr><th>วันที่</th><th>สาขา</th><th>หมวดหมู่</th><th>รายละเอียด</th><th>ผู้บันทึก</th><th class="tn">จำนวนเงิน</th><th></th></tr></thead><tbody id="etbl"></tbody></table></div>
+  <div id="eempty" class="empty" style="display:none">ไม่พบรายการ</div>
+</div></div>
+
+<!-- FILES -->
+<div id="panel-files" class="panel"><div class="card">
+  <div class="card-title">Export / Import ข้อมูล</div>
+  <p style="font-size:15px;color:var(--g2);margin-bottom:1rem">
+    เลือกปีและเดือนที่ต้องการ แล้วดาวน์โหลดได้ทั้งแบบ Excel หรือ Backup JSON — รองรับไฟล์รายเดือน รายปี และไฟล์รวมทั้งหมด
+  </p>
+
+  <div class="export-grid">
+    <div class="export-box">
+      <div class="export-box-title">📅 เลือกช่วงข้อมูล</div>
+      <div class="fg">
+        <div class="ff">
+          <label>ปีที่ต้องการ</label>
+          <select id="ex-year"></select>
+        </div>
+        <div class="ff">
+          <label>เดือนที่ต้องการ</label>
+          <select id="ex-month"></select>
+        </div>
+        <div class="ff">
+          <label>ประเภทข้อมูล</label>
+          <select id="ex-type">
+            <option value="all">ทุกรายการ</option>
+            <option value="productions">สั่งผลิตสินค้า</option>
+            <option value="invoices">บิลขาย</option>
+            <option value="quotes">ใบเสนอราคา</option>
+            <option value="receipts">ใบเสร็จรับเงิน</option>
+            <option value="expenses">ค่าใช้จ่าย</option>
+          </select>
+        </div>
+      </div>
+      <div class="export-actions">
+        <button class="btn btn-primary" onclick="exportSelectedMonthExcel()">⬇ Excel เดือนที่เลือก</button>
+        <button class="btn btn-green" onclick="exportSelectedYearExcel()">⬇ Excel ทั้งปีที่เลือก</button>
+        <button class="btn btn-ghost" onclick="exportSelectedMonthJSON()">⬇ Backup JSON เดือนที่เลือก</button>
+        <button class="btn btn-ghost" onclick="exportSelectedYearJSON()">⬇ Backup JSON ทั้งปีที่เลือก</button>
+      </div>
+    </div>
+
+    <div class="export-box">
+      <div class="export-box-title">🗂️ ไฟล์รวมและนำเข้าข้อมูล</div>
+      <p class="export-help">ใช้สำหรับสำรองข้อมูลทั้งหมด หรือนำไฟล์ Backup JSON รายเดือน/รายปี/ทั้งหมดกลับเข้าระบบ</p>
+      <div class="export-actions">
+        <button class="btn btn-purple" onclick="exportXLSX('all')">⬇ Excel รวมทุกปี</button>
+        <button class="btn btn-ghost" onclick="exportAllJSON()">⬇ Backup JSON ทั้งหมด</button>
+        <label class="btn btn-ghost" style="cursor:pointer">⬆ Import JSON
+          <input type="file" accept=".json" style="display:none" onchange="importJSON(event)">
+        </label>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+</div></div><!-- end main/layout -->
+
+</div><!-- /app-content -->
+
+<!-- ===== MOBILE DRAWER — CSS + JS เพิ่มใหม่ ไม่แตะโค้ดเดิมเลย ===== -->
+<style>
+/* แสดงปุ่ม ☰ และซ่อน sidebar บนมือถือ */
+@media(max-width:900px){
+  #mob-menu-btn{display:flex !important}
+  /* ปรับ topbar ไม่ให้ company-date ดันปุ่มออก */
+  .company-date{display:none}
+  /* ปรับปุ่มขนาดเล็ก (btn-sm) ให้กดง่ายขึ้นบนมือถือ */
+  .btn-sm{min-height:44px;min-width:44px;padding:8px 12px;font-size:14px}
+  /* ตารางรายการสินค้าในฟอร์ม scroll ได้ */
+  .items-table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  /* entry-table scroll ได้ */
+  .entry-table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  /* padding main ลดลงเล็กน้อยบนมือถือ */
+  .main{padding:1rem .75rem}
+  /* กราฟ dashboard ซ้อนกันแนวตั้ง */
+  .dash-chart-grid{grid-template-columns:1fr !important}
+}
+/* Drawer nav styles */
+.mob-sec{font-size:11px;font-weight:700;color:#9ca3af;padding:14px 1.1rem 4px;letter-spacing:.07em;text-transform:uppercase}
+.mob-item{display:flex;align-items:center;gap:10px;padding:13px 1.1rem;font-size:15px;color:#4b5563;cursor:pointer;border-left:3px solid transparent;transition:.12s;-webkit-tap-highlight-color:transparent}
+.mob-item:hover,.mob-item:active{background:#f1f5f9;color:#1d4ed8}
+.mob-item.mob-active{background:#eff6ff;color:#1d4ed8;border-left-color:#1d4ed8;font-weight:600}
+.mob-item svg{width:18px;height:18px;flex-shrink:0}
+/* Drawer open animation */
+#mob-drawer.open{transform:translateX(0) !important}
+#mob-overlay.open{display:block !important}
+</style>
+
+<script>
+/* Mobile Drawer — ฟังก์ชันทั้งหมดอยู่ใน namespace ของตัวเอง ไม่ชนกับ app.js */
+function openDrawer(){
+  document.getElementById('mob-drawer').style.display='block';
+  document.getElementById('mob-overlay').style.display='block';
+  requestAnimationFrame(()=>{
+    document.getElementById('mob-drawer').classList.add('open');
+    document.getElementById('mob-overlay').classList.add('open');
+  });
+  document.body.style.overflow='hidden';
+}
+function closeDrawer(){
+  const dr=document.getElementById('mob-drawer');
+  const ov=document.getElementById('mob-overlay');
+  dr.classList.remove('open');
+  ov.classList.remove('open');
+  document.body.style.overflow='';
+  setTimeout(()=>{
+    if(!dr.classList.contains('open')){dr.style.display='none';ov.style.display='none';}
+  },280);
+}
+function mobGo(panelId){
+  /* หา nav item ที่ตรงกับ panel แล้วเรียก go() ของ app.js */
+  closeDrawer();
+  /* ซิงค์ active state กับ drawer */
+  document.querySelectorAll('.mob-item').forEach(el=>el.classList.remove('mob-active'));
+  event.currentTarget.classList.add('mob-active');
+  /* เรียก go() ของ app.js โดยหา sidebar nav-item ที่ตรงกัน */
+  const sidebarItem=document.querySelector(`.nav-item[onclick*="${panelId}"]`);
+  if(sidebarItem && typeof go==='function'){
+    go(panelId,sidebarItem);
+  } else {
+    /* fallback: สลับ panel โดยตรง */
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    const target=document.getElementById('panel-'+panelId);
+    if(target) target.classList.add('active');
+  }
+  /* scroll ขึ้นบนสุด */
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+/* ปิด drawer เมื่อกด Escape */
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
+/* Swipe ซ้ายเพื่อปิด drawer */
+(function(){
+  let startX=0;
+  const dr=document.getElementById('mob-drawer');
+  dr.addEventListener('touchstart',e=>{startX=e.touches[0].clientX;},{passive:true});
+  dr.addEventListener('touchend',e=>{
+    if(startX-e.changedTouches[0].clientX>60) closeDrawer();
+  },{passive:true});
+})();
+</script>
+
+</body>
+</html>

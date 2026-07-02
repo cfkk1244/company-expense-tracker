@@ -1,0 +1,97 @@
+rules_version = '2';
+
+// =====================================================================
+// Firestore Security Rules — Comform Esan ERP
+// =====================================================================
+// หลักการ:
+// 1. ต้อง login ก่อนเสมอ (request.auth != null) ถึงจะอ่าน/เขียนได้
+// 2. ผู้ใช้แต่ละคนมีเอกสารโปรไฟล์ใน collection "users" ระบุว่าอยู่สาขาไหน
+//    เช่น { branch: "khonkaen" } หรือ { branch: "ubon" } หรือ { branch: "all" }
+// 3. ผู้ใช้อ่าน/เขียนได้เฉพาะเอกสารของสาขาตัวเอง (หรือ "all" สำหรับผู้ดูแลระบบ)
+// 4. ห้ามแก้ไข createdAt และ branch หลังสร้างแล้ว (กันพนักงานสาขาหนึ่งสวมรอยสาขาอื่น)
+//
+// วิธีติดตั้ง: Firebase Console > Firestore Database > Rules > วางไฟล์นี้ทั้งหมด > Publish
+// =====================================================================
+
+function isSignedIn() {
+  return request.auth != null;
+}
+
+function userBranch() {
+  return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.branch;
+}
+
+function canAccessBranch(docBranch) {
+  return isSignedIn() && (userBranch() == 'all' || userBranch() == docBranch);
+}
+
+function isOwnerOfNewDoc() {
+  return isSignedIn() &&
+    (userBranch() == 'all' || userBranch() == request.resource.data.branch);
+}
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------------------------------------------------------
+    // users/{uid} — โปรไฟล์ผู้ใช้ ระบุสาขาที่สังกัด
+    // ผู้ใช้อ่านโปรไฟล์ตัวเองได้ แต่แก้ไขเองไม่ได้ (ต้องให้แอดมินตั้งค่าผ่าน Firebase Console
+    // หรือ Cloud Function เท่านั้น กันพนักงานเปลี่ยนสาขาตัวเองเพื่อขโมยข้อมูลสาขาอื่น)
+    // ---------------------------------------------------------
+    match /users/{uid} {
+      allow read: if isSignedIn() && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    // ---------------------------------------------------------
+    // ใบเสนอราคา / บิลใบส่งสินค้า / ใบเสร็จ / ใบสั่งผลิต / ค่าใช้จ่าย
+    // ทุก collection ใช้กฎเดียวกัน: อ่าน-เขียนได้เฉพาะสาขาตัวเอง (หรือ admin)
+    // ---------------------------------------------------------
+    match /quotes/{docId} {
+      allow read: if canAccessBranch(resource.data.branch);
+      allow create: if isOwnerOfNewDoc();
+      allow update: if canAccessBranch(resource.data.branch)
+                    && request.resource.data.branch == resource.data.branch;
+      allow delete: if canAccessBranch(resource.data.branch);
+    }
+
+    match /invoices/{docId} {
+      allow read: if canAccessBranch(resource.data.branch);
+      allow create: if isOwnerOfNewDoc();
+      allow update: if canAccessBranch(resource.data.branch)
+                    && request.resource.data.branch == resource.data.branch;
+      allow delete: if canAccessBranch(resource.data.branch);
+    }
+
+    match /receipts/{docId} {
+      allow read: if canAccessBranch(resource.data.branch);
+      allow create: if isOwnerOfNewDoc();
+      allow update: if canAccessBranch(resource.data.branch)
+                    && request.resource.data.branch == resource.data.branch;
+      allow delete: if canAccessBranch(resource.data.branch);
+    }
+
+    match /productions/{docId} {
+      allow read: if canAccessBranch(resource.data.branch);
+      allow create: if isOwnerOfNewDoc();
+      allow update: if canAccessBranch(resource.data.branch)
+                    && request.resource.data.branch == resource.data.branch;
+      allow delete: if canAccessBranch(resource.data.branch);
+    }
+
+    match /expenses/{docId} {
+      allow read: if canAccessBranch(resource.data.branch);
+      allow create: if isOwnerOfNewDoc();
+      allow update: if canAccessBranch(resource.data.branch)
+                    && request.resource.data.branch == resource.data.branch;
+      allow delete: if canAccessBranch(resource.data.branch);
+    }
+
+    // ---------------------------------------------------------
+    // ปิดกั้นทุกอย่างนอกเหนือจากที่ระบุไว้ข้างบน (ค่าเริ่มต้นปลอดภัยไว้ก่อน)
+    // ---------------------------------------------------------
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

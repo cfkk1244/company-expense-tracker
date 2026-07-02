@@ -1,0 +1,12 @@
+node_modules/
+dist/
+
+.env
+.env.local
+.env.production
+.env.*.local
+
+# ห้ามอัปไฟล์ secret ฝั่ง server
+serviceAccountKey.json
+*.log
+.DS_Store

@@ -1,0 +1,71 @@
+rules_version = '2';
+
+// =====================================================================
+// Firebase Storage Security Rules — Comform Esan ERP
+// =====================================================================
+// ใช้คู่กับ firestore.rules — ต้อง login และอยู่สาขาที่ตรงกับ path เท่านั้น
+// ถึงจะอัปโหลด/ดาวน์โหลดไฟล์ (รูปภาพ, PDF หลักฐาน) ได้
+//
+// โครงสร้าง path ที่ firebase-bridge.js ใช้:
+//   quotes/{branch}/{docNo}/{filename}
+//   invoices/{branch}/{docNo}/{filename}
+//   receipts/{branch}/{docNo}/{filename}
+//   productions/{branch}/{docNo}/{filename}
+//   expenses/{branch}/{docNo}/{filename}
+//
+// วิธีติดตั้ง: Firebase Console > Storage > Rules > วางไฟล์นี้ทั้งหมด > Publish
+// =====================================================================
+
+function isSignedIn() {
+  return request.auth != null;
+}
+
+function userBranch() {
+  return firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.branch;
+}
+
+function canAccessBranch(branch) {
+  return isSignedIn() && (userBranch() == 'all' || userBranch() == branch);
+}
+
+function isValidFile() {
+  // จำกัดขนาดไฟล์ไม่เกิน 10MB และเฉพาะรูปภาพหรือ PDF เท่านั้น
+  return request.resource.size < 10 * 1024 * 1024
+    && (request.resource.contentType.matches('image/.*')
+        || request.resource.contentType == 'application/pdf');
+}
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    match /quotes/{branch}/{docNo}/{fileName} {
+      allow read: if canAccessBranch(branch);
+      allow write: if canAccessBranch(branch) && isValidFile();
+    }
+
+    match /invoices/{branch}/{docNo}/{fileName} {
+      allow read: if canAccessBranch(branch);
+      allow write: if canAccessBranch(branch) && isValidFile();
+    }
+
+    match /receipts/{branch}/{docNo}/{fileName} {
+      allow read: if canAccessBranch(branch);
+      allow write: if canAccessBranch(branch) && isValidFile();
+    }
+
+    match /productions/{branch}/{docNo}/{fileName} {
+      allow read: if canAccessBranch(branch);
+      allow write: if canAccessBranch(branch) && isValidFile();
+    }
+
+    match /expenses/{branch}/{docNo}/{fileName} {
+      allow read: if canAccessBranch(branch);
+      allow write: if canAccessBranch(branch) && isValidFile();
+    }
+
+    // ปิดกั้นทุก path อื่นที่ไม่ได้ระบุไว้
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
